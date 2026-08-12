@@ -1,0 +1,20 @@
+{
+  "name": "taskforge",
+  "version": "1.0.0",
+  "description": "TaskForge is a full-stack project and task management platform designed to help individuals and teams organize projects, assign tasks, track progress, and collaborate efficiently in one place.",
+  "license": "ISC",
+  "author": "Bilesh",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.9.2"
+  }
+}
