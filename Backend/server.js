@@ -8,10 +8,9 @@ import taskRoutes from "./routes/task.routes.js";
 const app = express();
 app.use(express.json());
 
-// Register the auth routes
 app.use("/api/auth", authRoutes);
 
-app.unsubscribe("/api/tasks",taskRoutes);
+app.use("/api/tasks",taskRoutes);
 // Load environment variables from .env file
 dotenv.config();
 
