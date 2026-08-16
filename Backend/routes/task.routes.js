@@ -7,14 +7,16 @@ import {
   deleteTask
 } from "../controllers/task.controller.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
+import validateTask from "../middleware/validateTask.middleware.js";
 
 const router = express.Router();
 
-router.post("/", authMiddleware, createTask);
+router.post("/", authMiddleware,validateTask, createTask);
 router.get("/", authMiddleware, getTasks);
 router.get("/:id", authMiddleware, getTask);
 router.put("/:id", authMiddleware, updateTask);
 router.delete("/:id",authMiddleware, deleteTask);
+
 
 
 
