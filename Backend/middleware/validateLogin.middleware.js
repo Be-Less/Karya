@@ -12,6 +12,7 @@ const validateLogin = (req, res, next) => {
       message: "Password is required",
     });
   }
+  next();
 };
 
 export default validateLogin;
