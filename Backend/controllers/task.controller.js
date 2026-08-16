@@ -1,6 +1,6 @@
 import Task from "../models/task.model.js";
 import mongoose from "mongoose";
-export const createTask = async (req, res) => {
+export const createTask = async (req, res, next) => {
   try {
     const { title, description } = req.body;
 
@@ -14,14 +14,11 @@ export const createTask = async (req, res) => {
       task,
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: "Something Went WRONG",
-    });
+    next(error);
   }
 };
 
-export const getTasks = async (req, res) => {
+export const getTasks = async (req, res, next) => {
   try {
     const tasks = await Task.find({
       userId: req.user.userId,
@@ -30,14 +27,11 @@ export const getTasks = async (req, res) => {
       tasks,
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: "Something Went WRONG",
-    });
+    next(error);
   }
 };
 
-export const getTask = async (req, res) => {
+export const getTask = async (req, res, next) => {
   try {
     const { id } = req.params;
 
@@ -59,14 +53,11 @@ export const getTask = async (req, res) => {
       task,
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: "Something Went WRONG",
-    });
+    next(error);
   }
 };
 
-export const updateTask = async (req, res) => {
+export const updateTask = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { title, description, status } = req.body;
@@ -102,14 +93,11 @@ export const updateTask = async (req, res) => {
       task,
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: "Something Went WRONG",
-    });
+    next(error);
   }
 };
 
-export const deleteTask = async (req, res) => {
+export const deleteTask = async (req, res, next) => {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -133,9 +121,6 @@ export const deleteTask = async (req, res) => {
       message: "Task deleted successfully",
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: "Something Went WRONG",
-    });
+    next(error);
   }
 };
