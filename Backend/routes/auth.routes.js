@@ -1,6 +1,7 @@
 import express from 'express';
 import {registerUser, loginUser} from '../controllers/auth.controller.js';
 import { authMiddleware } from '../middleware/auth.middleware.js';
+
 const router = express.Router();
 
 router.post('/register', registerUser);
@@ -10,5 +11,7 @@ router.get('/profile', authMiddleware, (req, res) => {
     message: "You are authenticated",
     user: req.user });
 });
+
+
 
 export default router;

@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/auth.routes.js";
+import taskRoutes from "./routes/task.routes.js";
 
 // Middleware to parse JSON request bodies
 const app = express();
@@ -10,6 +11,7 @@ app.use(express.json());
 // Register the auth routes
 app.use("/api/auth", authRoutes);
 
+app.unsubscribe("/api/tasks",taskRoutes);
 // Load environment variables from .env file
 dotenv.config();
 
