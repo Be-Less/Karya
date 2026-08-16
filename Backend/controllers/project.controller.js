@@ -22,3 +22,17 @@ res.status(201).json({
     next(errro);
   }
 };
+
+export const getProjects = async (req, res, next) => {
+  try {
+    const projects = await Project.find({
+      "members.user": req.user.userId,
+    });
+
+    res.status(200).json({
+      projects,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
