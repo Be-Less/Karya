@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  addProjectMember,
   createProject,
   deleteProject,
   getProject,
@@ -14,4 +15,7 @@ router.get("/", authMiddleware, getProjects);
 router.get("/:id", authMiddleware, getProject);
 router.put("/:id", authMiddleware, updateProject);
 router.delete("/:id",authMiddleware,deleteProject);
+router.post("/:id/members",authMiddleware, addProjectMember);
+
+
 export default router;

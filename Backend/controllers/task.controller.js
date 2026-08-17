@@ -4,17 +4,32 @@ import Project from "../models/project.model.js";
 
 export const createTask = async (req, res, next) => {
   try {
-    const { title, description, projectId } = req.body;
+    const { title, description, projectId, assignedTo } = req.body;
 
     const project = await Project.findOne({
       _id: projectId,
       "members.user": req.user.userId,
     });
-
+    if (!projectId) {
+      return res.status(400).json({
+        message: "Project ID is required",
+      });
+    }
     if (!project) {
       return res.status(403).json({
         message: "You are not a member of this project",
       });
+    }
+    if (assignedTo) {
+      const isMember = project.members.some(
+        (member) => member.user.toString() === assignedTo,
+      );
+
+      if (!isMember) {
+        return res.status(400).json({
+          message: "Assigned user is not a member of this project",
+        });
+      }
     }
     const task = await Task.create({
       title,
