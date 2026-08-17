@@ -1,12 +1,25 @@
 import Task from "../models/task.model.js";
 import mongoose from "mongoose";
+import Project from "../models/project.model.js";
+
 export const createTask = async (req, res, next) => {
   try {
-    const { title, description } = req.body;
+    const { title, description, projectId } = req.body;
 
+    const project = await Project.findOne({
+      _id: projectId,
+      "members.user": req.user.userId,
+    });
+
+    if (!project) {
+      return res.status(403).json({
+        message: "You are not a member of this project",
+      });
+    }
     const task = await Task.create({
       title,
       description,
+      projectId,
       userId: req.user.userId,
     });
     res.status(201).json({

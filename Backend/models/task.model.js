@@ -13,17 +13,22 @@ const taskSchema = new mongoose.Schema(
     },
     status: {
       type: Boolean,
-      default: false
+      default: false,
+    },
+    projectId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Project",
+      required: true,
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true
-    }
+      required: true,
+    },
   },
   {
-    timestamps: true
-  }
+    timestamps: true,
+  },
 );
-const Task = mongoose.model("Task",taskSchema);
+const Task = mongoose.model("Task", taskSchema);
 export default Task;
