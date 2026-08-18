@@ -48,9 +48,14 @@ export const createTask = async (req, res, next) => {
 
 export const getTasks = async (req, res, next) => {
   try {
-    const tasks = await Task.find({
-      userId: req.user.userId,
+    const projects = await Project.find({
+      "members.user": req.user.userId,
     });
+    const projectIds = projects.map((project) => project._id);
+    const tasks = await Task.find({
+      projectId: { $in: projectIds },
+    });
+
     res.status(200).json({
       tasks,
     });
@@ -68,13 +73,19 @@ export const getTask = async (req, res, next) => {
         message: "Invalid task ID",
       });
     }
-    const task = await Task.findOne({
-      _id: id,
-      userId: req.user.userId,
-    });
+    const task = await Task.findById(id);
     if (!task) {
       return res.status(404).json({
         message: "Task not found",
+      });
+    }
+    const project = await Project.findOne({
+      _id: task.projectId,
+      "members.user": req.user.userId,
+    });
+    if (!project) {
+      return res.status(403).json({
+        message: "You are not a member of this project",
       });
     }
     res.status(200).json({
