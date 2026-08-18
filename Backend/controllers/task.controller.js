@@ -4,7 +4,8 @@ import Project from "../models/project.model.js";
 
 export const createTask = async (req, res, next) => {
   try {
-    const { title, description, projectId, assignedTo, dueDate } = req.body;
+    const { title, description, projectId, assignedTo, dueDate, priority } =
+      req.body;
 
     const project = await Project.findOne({
       _id: projectId,
@@ -38,6 +39,7 @@ export const createTask = async (req, res, next) => {
       userId: req.user.userId,
       assignedTo,
       dueDate,
+      priority,
     });
     res.status(201).json({
       message: "Task created Successfully",
@@ -101,7 +103,7 @@ export const getTask = async (req, res, next) => {
 export const updateTask = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { title, description, status, dueDate } = req.body;
+    const { title, description, status, dueDate, priority } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
@@ -119,6 +121,7 @@ export const updateTask = async (req, res, next) => {
         description,
         status,
         dueDate,
+        priority,
       },
       {
         returnDocument: "after",
