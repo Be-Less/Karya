@@ -190,3 +190,44 @@ export const addProjectMember = async (req, res, next) => {
     next(error);
   }
 };
+export const removeProjectMember = async (req, res, next) => {
+  try {
+    const { id, userId } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        message: "Invalid project ID",
+      });
+    }
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({
+        message: "Invalid user ID",
+      });
+    }
+    const project = await Project.findOne({
+      _id: id,
+      owner: req.user.userId,
+    });
+
+    if (!project) {
+      return res.status(404).json({
+        message: "Project not found",
+      });
+    }
+    const memberIndex = project.members.findIndex(
+      (member) => member.user.toString() === userId,
+    );
+    if (memberIndex === -1) {
+      return res.status(404).json({
+        message: "User is not a member of this project",
+      });
+    }
+    project.members.splice(memberIndex, 1);
+    await project.save();
+    res.status(200).json({
+      message: "Member removed successfully",
+      project,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
