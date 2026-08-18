@@ -5,21 +5,25 @@ import authRoutes from "./routes/auth.routes.js";
 import taskRoutes from "./routes/task.routes.js";
 import errorHandler from "./middleware/error.middleware.js";
 import projectRoutes from "./routes/project.routes.js";
-
+import cors from "cors";
+import commentRoutes from "./routes/comment.routes.js"
 // Middleware to parse JSON request bodies
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 // Authentication Routes
 app.use("/api/auth", authRoutes);
 
 // Task management Routes
-app.use("/api/tasks",taskRoutes);
+app.use("/api/tasks", taskRoutes);
 
 // Project management Routes
 app.use("/api/projects", projectRoutes);
 
+app.use("/api/tasks", commentRoutes);
 app.use(errorHandler);
+
 // Load environment variables from .env file
 dotenv.config();
 
