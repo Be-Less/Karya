@@ -52,13 +52,32 @@ export const createTask = async (req, res, next) => {
 
 export const getTasks = async (req, res, next) => {
   try {
+    const { status, priority } = req.query;
+    // console.log(status);
+    if (status && !["todo", "in-progress", "completed"].includes(status)) {
+      return res.status(400).json({
+        message: "Invalid status",
+      });
+    }
+    if (priority && !["low", "medium", "high"].includes(priority)) {
+      return res.status(400).json({
+        message: "Invalid priority",
+      });
+    }
     const projects = await Project.find({
       "members.user": req.user.userId,
     });
     const projectIds = projects.map((project) => project._id);
-    const tasks = await Task.find({
+    const filter = {
       projectId: { $in: projectIds },
-    });
+    };
+    if (status) {
+      filter.status = status;
+    }
+    if (priority) {
+      filter.priority = priority;
+    }
+    const tasks = await Task.find(filter);
 
     res.status(200).json({
       tasks,
