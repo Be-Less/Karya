@@ -25,7 +25,9 @@ const validateTaskUpdate = (req, res, next) => {
     });
   }
 
-  if (status !== undefined && typeof status !== "boolean") {
+  const validStatuses = ["todo", "in-progress", "completed"];
+
+  if (status !== undefined && !validStatuses.includes(status)) {
     return res.status(400).json({
       message: "Invalid status",
     });
