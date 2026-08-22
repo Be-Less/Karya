@@ -43,3 +43,12 @@ export const createComment = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getComments = async (req, res, next) => {
+  try {
+    console.log("getTask Reached");
+    
+  } catch (error) {
+    next(error);
+  }
+};
