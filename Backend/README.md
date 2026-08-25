@@ -1,57 +1,160 @@
-# Karya Backend API
+# Karya — Backend
 
-A RESTful task and project management backend API built with **Node.js**, **Express**, and **MongoDB**. It features JWT-based authentication, structured task and project management workflows, custom request validation, and interactive Swagger API documentation.
+Karya (package name `taskforge`) is the REST API powering a full-stack project and task management platform. It lets individuals and teams create projects, invite members, assign and track tasks, and discuss work through comments — all in one place.
 
----
+Built with **Node.js**, **Express 5**, and **MongoDB (Mongoose)**, with JWT-based authentication and interactive API docs via **Swagger**.
 
 ## Features
 
-* **Authentication & Authorization**: User registration, login, and secure endpoints using JSON Web Tokens (JWT)[cite: 1].
-* **Project Management**: Create, view, and organize projects[cite: 1].
-* **Task Management**: Create, update, assign, track, and delete task items within projects[cite: 1].
-* **Collaboration**: Task commenting system for project team members[cite: 1].
-* **Input Validation & Security**: Middleware-driven request validation and centralized error handling[cite: 1].
-* **API Documentation**: Interactive API testing playground powered by Swagger UI[cite: 1].
-
----
+- **Authentication** — register/login with hashed passwords (bcrypt) and JWT-based sessions
+- **Projects** — create, update, delete projects, and manage members with roles (`owner`, `admin`, `member`)
+- **Tasks** — create, update, delete, and assign tasks within a project, with `status` (`todo`, `in-progress`, `completed`), `priority` (`low`, `medium`, `high`), and due dates
+- **Comments** — threaded comments on individual tasks
+- **API Documentation** — auto-generated Swagger UI at `/api-docs`
 
 ## Tech Stack
 
-* **Runtime**: Node.js[cite: 1]
-* **Framework**: Express.js[cite: 1]
-* **Database**: MongoDB (via Mongoose schemas)[cite: 1]
-* **Authentication**: JSON Web Token (`jsonwebtoken`)[cite: 1]
-* **Documentation**: Swagger UI (`swagger-ui-express`)[cite: 1]
-
----
+| Layer          | Technology                          |
+|----------------|--------------------------------------|
+| Runtime        | Node.js (ES Modules)                |
+| Framework      | Express 5                           |
+| Database       | MongoDB + Mongoose                  |
+| Auth           | JWT (jsonwebtoken) + bcrypt/bcryptjs |
+| Docs           | swagger-jsdoc + swagger-ui-express  |
+| Dev tooling    | nodemon                             |
 
 ## Project Structure
 
-```text
+```
 Backend/
 ├── config/
-│   ├── db.js                 # Database connection setup
-│   └── swagger.js            # Swagger API documentation configuration
+│   ├── db.js            # MongoDB connection
+│   └── swagger.js       # Swagger/OpenAPI configuration
 ├── controllers/
-│   ├── auth.controller.js    # Authentication business logic
-│   ├── comment.controller.js # Task commenting logic
-│   ├── project.controller.js # Project management logic
-│   └── task.controller.js    # Task management logic
+│   ├── auth.controller.js
+│   ├── comment.controller.js
+│   ├── project.controller.js
+│   └── task.controller.js
 ├── middleware/
-│   ├── auth.middleware.js           # JWT authentication check
-│   ├── error.middleware.js          # Global error handler
-│   ├── validateLogin.middleware.js  # Login input validation
-│   ├── validateRegister.middleware.js # Registration validation
-│   ├── validateTask.middleware.js   # Task creation validation
-│   └── validateTaskUpdate.middleware.js # Task update validation
+│   ├── auth.middleware.js           # JWT verification
+│   ├── error.middleware.js          # Centralized error handler
+│   ├── validateLogin.middleware.js
+│   ├── validateRegister.middleware.js
+│   ├── validateTask.middleware.js
+│   └── validateTaskUpdate.middleware.js
 ├── models/
-│   ├── comment.model.js      # Comment schema
-│   ├── project.model.js      # Project schema
-│   ├── task.model.js         # Task schema
-│   └── user.model.js         # User schema
+│   ├── comment.model.js
+│   ├── project.model.js
+│   ├── task.model.js
+│   └── user.model.js
 ├── routes/
-│   ├── auth.routes.js        # Auth endpoints
-│   ├── comment.routes.js     # Comment endpoints
-│   ├── project.routes.js     # Project endpoints
-│   └── task.routes.js        # Task endpoints
-└── server.js                 # Application entry point
+│   ├── auth.routes.js
+│   ├── comment.routes.js
+│   ├── project.routes.js
+│   └── task.routes.js
+├── server.js             # App entry point
+├── package.json
+└── .gitignore
+```
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v18+ recommended)
+- A running MongoDB instance (local or a hosted service like MongoDB Atlas)
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/Be-Less/Karya.git
+cd Karya/Backend
+
+# Install dependencies
+npm install
+```
+
+### Environment Variables
+
+Create a `.env` file in the `Backend/` directory with the following variables:
+
+```env
+PORT=3000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret_key
+```
+
+### Running the Server
+
+```bash
+npm start
+```
+
+This runs `nodemon server.js`, so the server restarts automatically on file changes. By default the API is available at:
+
+```
+http://localhost:3000
+```
+
+Interactive API documentation (Swagger UI) is available at:
+
+```
+http://localhost:3000/api-docs
+```
+
+## API Overview
+
+All endpoints below are prefixed with `/api`. Endpoints marked 🔒 require a `Bearer <token>` in the `Authorization` header.
+
+### Auth (`/api/auth`)
+
+| Method | Endpoint          | Description                  |
+|--------|-------------------|-------------------------------|
+| POST   | `/register`       | Register a new user          |
+| POST   | `/login`          | Log in and receive a JWT     |
+| GET    | `/profile` 🔒     | Get the authenticated user   |
+
+### Projects (`/api/projects`)
+
+| Method | Endpoint                     | Description                     |
+|--------|-------------------------------|----------------------------------|
+| POST   | `/` 🔒                        | Create a project                |
+| GET    | `/` 🔒                        | List projects for current user  |
+| GET    | `/:id` 🔒                     | Get project details             |
+| PUT    | `/:id` 🔒                     | Update a project                |
+| DELETE | `/:id` 🔒                     | Delete a project                |
+| POST   | `/:id/members` 🔒             | Add a member to a project       |
+| DELETE | `/:id/members/:userId` 🔒     | Remove a project member         |
+
+### Tasks (`/api/tasks`)
+
+| Method | Endpoint    | Description                          |
+|--------|-------------|----------------------------------------|
+| POST   | `/` 🔒      | Create a task (requires `projectId`)  |
+| GET    | `/` 🔒      | List tasks across current user's projects |
+| GET    | `/:id` 🔒   | Get a single task                     |
+| PUT    | `/:id` 🔒   | Update a task                         |
+| DELETE | `/:id` 🔒   | Delete a task                         |
+
+### Comments (`/api/tasks/:taskId/comments`)
+
+| Method | Endpoint                        | Description               |
+|--------|----------------------------------|----------------------------|
+| POST   | `/` 🔒                           | Add a comment to a task   |
+| GET    | `/` 🔒                           | List comments on a task   |
+| PUT    | `/:commentId` 🔒                 | Update a comment          |
+| DELETE | `/:commentId` 🔒                 | Delete a comment          |
+
+For full request/response schemas, see the Swagger UI at `/api-docs` once the server is running.
+
+## Data Models
+
+- **User** — `name`, `email` (unique), `password` (hashed)
+- **Project** — `name`, `description`, `owner`, `members` (each with `user` + `role`)
+- **Task** — `title`, `description`, `status`, `priority`, `dueDate`, `projectId`, `userId` (creator), `assignedTo`
+- **Comment** — `content`, `taskId`, `userId`
+
+## License
+
+ISC
