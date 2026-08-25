@@ -5,7 +5,6 @@ import mongoose from "mongoose";
 
 export const createComment = async (req, res, next) => {
   try {
-    console.log("createComment reached");
     const { taskId } = req.params;
     const { content } = req.body;
     if (!mongoose.Types.ObjectId.isValid(taskId)) {

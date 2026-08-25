@@ -6,7 +6,10 @@ import taskRoutes from "./routes/task.routes.js";
 import errorHandler from "./middleware/error.middleware.js";
 import projectRoutes from "./routes/project.routes.js";
 import cors from "cors";
-import commentRoutes from "./routes/comment.routes.js"
+import commentRoutes from "./routes/comment.routes.js";
+import swaggerUi from "swagger-ui-express";
+import swaggerSpec from "./config/swagger.js";
+
 // Middleware to parse JSON request bodies
 const app = express();
 app.use(express.json());
@@ -22,13 +25,14 @@ app.use("/api/tasks", taskRoutes);
 app.use("/api/projects", projectRoutes);
 
 app.use("/api/tasks", commentRoutes);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(errorHandler);
 
 // Load environment variables from .env file
 dotenv.config();
 
 app.get("/", (req, res) => {
-  res.send("Welcome to TaskForge😈");
+  res.send("Welcome to Karya");
 });
 
 // Calling connectDB function to establish a connection to the MongoDB database
