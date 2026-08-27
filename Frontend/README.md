@@ -1,75 +1,43 @@
-# React + TypeScript + Vite
+# Karya — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Modern React 19 + TypeScript + Tailwind CSS client for the **Karya** project and task management backend.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Authentication**: User Registration, Login, JWT session management, Protected Routes.
+- **Dashboard**: High-level workspace metrics (total projects, completion rate, pending tasks, recent activity).
+- **Projects**: Create, edit, delete projects, view project details, and manage team members with role badges (`owner`, `admin`, `member`).
+- **Tasks & Kanban Board**:
+  - 3-column Kanban board (`To Do`, `In Progress`, `Completed`) with quick drag/dropdown status updates.
+  - List / Table view toggle.
+  - Multi-filtering by project, status, and priority (`Low`, `Medium`, `High`).
+  - Task creation and edit modals with due date pickers and assignee selectors.
+- **Task Discussions**: Threaded comments on individual tasks with author editing and deletion.
 
-## React Compiler
+## Getting Started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 1. Prerequisites
+Ensure the backend server is running at `http://localhost:3000`.
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+# In Karya/Backend directory:
+npm install
+npm start
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+### 2. Start the Frontend
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```bash
+# In Karya/Frontend directory:
+npm install
+npm run dev
+```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Open [http://localhost:5173](http://localhost:5173) in your browser.
 
+## Environment Variables
+
+Configure `.env` if your backend is hosted on a different URL:
+```env
+VITE_API_BASE_URL=http://localhost:3000/api
 ```
