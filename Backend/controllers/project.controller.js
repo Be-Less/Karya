@@ -17,6 +17,7 @@ export const createProject = async (req, res, next) => {
         },
       ],
     });
+    await project.populate("members.user", "name email");
     res.status(201).json({
       message: "Project created Successfully",
       project,
@@ -30,7 +31,7 @@ export const getProjects = async (req, res, next) => {
   try {
     const projects = await Project.find({
       "members.user": req.user.userId,
-    });
+    }).populate("members.user", "name email");
 
     res.status(200).json({
       projects,
@@ -52,13 +53,15 @@ export const getProject = async (req, res, next) => {
     const project = await Project.findOne({
       _id: id,
       "members.user": req.user.userId,
-    });
+    }).populate("members.user", "name email");
 
     if (!project) {
       return res.status(404).json({
         message: "Project not found",
       });
     }
+
+    await project.populate("members.user", "name email");
 
     res.status(200).json({
       project,
@@ -100,6 +103,8 @@ export const updateProject = async (req, res, next) => {
       });
     }
 
+    await project.populate("members.user", "name email");
+
     res.status(200).json({
       message: "Project updated successfully",
       project,
@@ -139,7 +144,7 @@ export const deleteProject = async (req, res, next) => {
 export const addProjectMember = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { userId } = req.body;
+    const { userId, email } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
@@ -147,9 +152,9 @@ export const addProjectMember = async (req, res, next) => {
       });
     }
 
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
+    if (!userId && !email) {
       return res.status(400).json({
-        message: "Invalid user ID",
+        message: "A user ID or email is required",
       });
     }
     const project = await Project.findOne({
@@ -161,15 +166,20 @@ export const addProjectMember = async (req, res, next) => {
         message: "Project not found",
       });
     }
-    const user = await User.findById(userId);
+    const user = userId
+      ? mongoose.Types.ObjectId.isValid(userId)
+        ? await User.findById(userId)
+        : null
+      : await User.findOne({ email: email.trim().toLowerCase() });
 
     if (!user) {
       return res.status(404).json({
-        message: "User not found",
+        message: "No user found with that email or ID",
       });
     }
+    const resolvedUserId = user._id.toString();
     const alreadyMember = project.members.some(
-      (member) => member.user.toString() === userId,
+      (member) => member.user.toString() === resolvedUserId,
     );
 
     if (alreadyMember) {
@@ -178,10 +188,11 @@ export const addProjectMember = async (req, res, next) => {
       });
     }
     project.members.push({
-      user: userId,
+      user: user._id,
       role: "member",
     });
     await project.save();
+    await project.populate("members.user", "name email");
     res.status(200).json({
       message: "Member added successfully",
       project,
@@ -223,6 +234,7 @@ export const removeProjectMember = async (req, res, next) => {
     }
     project.members.splice(memberIndex, 1);
     await project.save();
+    await project.populate("members.user", "name email");
     res.status(200).json({
       message: "Member removed successfully",
       project,

@@ -10,7 +10,7 @@ interface MemberManagementModalProps {
   project: Project | null;
   isOpen: boolean;
   onClose: () => void;
-  onAddMember: (projectId: string, userId: string) => Promise<void>;
+  onAddMember: (projectId: string, email: string) => Promise<void>;
   onRemoveMember: (projectId: string, userId: string) => Promise<void>;
 }
 
@@ -22,7 +22,7 @@ export const MemberManagementModal: React.FC<MemberManagementModalProps> = ({
   onRemoveMember,
 }) => {
   const { user } = useAuth();
-  const [newUserId, setNewUserId] = useState('');
+  const [newMemberEmail, setNewMemberEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,13 +32,13 @@ export const MemberManagementModal: React.FC<MemberManagementModalProps> = ({
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newUserId.trim()) return;
+    if (!newMemberEmail.trim()) return;
 
     try {
       setLoading(true);
       setError(null);
-      await onAddMember(project._id, newUserId.trim());
-      setNewUserId('');
+      await onAddMember(project._id, newMemberEmail.trim());
+      setNewMemberEmail('');
     } catch (err: any) {
       setError(err?.message || 'Failed to add member');
     } finally {
@@ -69,19 +69,20 @@ export const MemberManagementModal: React.FC<MemberManagementModalProps> = ({
         {isOwner ? (
           <form onSubmit={handleAdd} className="space-y-1.5">
             <label className="block text-xs font-medium text-zinc-300">
-              Invite by User ID
+              Invite by email
             </label>
             <div className="flex gap-2">
               <input
-                type="text"
-                value={newUserId}
-                onChange={(e) => setNewUserId(e.target.value)}
-                placeholder="Paste User ID (24 hex characters)"
+                type="email"
+                required
+                value={newMemberEmail}
+                onChange={(e) => setNewMemberEmail(e.target.value)}
+                placeholder="teammate@work.com"
                 className="flex-1 bg-[#0d0f15] border border-zinc-700/70 focus:border-zinc-400 rounded-lg px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 transition-colors"
               />
               <button
                 type="submit"
-                disabled={loading || !newUserId.trim()}
+                disabled={loading || !newMemberEmail.trim()}
                 className="px-3.5 py-2 bg-zinc-100 hover:bg-white disabled:opacity-40 text-zinc-900 rounded-lg font-semibold text-xs transition-colors shrink-0"
               >
                 {loading ? <LoadingSpinner size="sm" /> : 'Invite'}

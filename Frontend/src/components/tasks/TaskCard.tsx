@@ -2,6 +2,7 @@ import React from 'react';
 import type { Task } from '../../types';
 import { Badge } from '../common/Badge';
 import { Calendar, Trash2, Edit3, User as UserIcon } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 interface TaskCardProps {
   task: Task;
@@ -18,6 +19,8 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   onDelete,
   onStatusChange,
 }) => {
+  const { user } = useAuth();
+  const canManageTask = task.userId === user?._id;
   const formattedDueDate = task.dueDate
     ? new Date(task.dueDate).toLocaleDateString(undefined, {
         month: 'short',
@@ -34,25 +37,27 @@ export const TaskCard: React.FC<TaskCardProps> = ({
         <div className="flex items-start justify-between gap-2">
           <Badge variant="priority" value={task.priority} />
 
-          <div
-            className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => onEdit(task)}
-              className="p-1 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 rounded transition-colors"
-              title="Edit"
+          {canManageTask && (
+            <div
+              className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+              onClick={(e) => e.stopPropagation()}
             >
-              <Edit3 className="w-3.5 h-3.5" />
-            </button>
-            <button
-              onClick={() => onDelete(task._id)}
-              className="p-1 text-zinc-400 hover:text-rose-400 hover:bg-zinc-800 rounded transition-colors"
-              title="Delete"
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-            </button>
-          </div>
+              <button
+                onClick={() => onEdit(task)}
+                className="p-1 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 rounded transition-colors"
+                title="Edit"
+              >
+                <Edit3 className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={() => onDelete(task._id)}
+                className="p-1 text-zinc-400 hover:text-rose-400 hover:bg-zinc-800 rounded transition-colors"
+                title="Delete"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
         </div>
 
         <h4 className="font-medium text-[13px] text-zinc-100 group-hover:text-white leading-snug line-clamp-2">
@@ -81,13 +86,13 @@ export const TaskCard: React.FC<TaskCardProps> = ({
               <span>
                 {typeof task.assignedTo === 'object' && task.assignedTo !== null
                   ? task.assignedTo.name
-                  : 'Assigned'}
+                  : 'Assigned user'}
               </span>
             </div>
           )}
         </div>
 
-        {onStatusChange && (
+        {onStatusChange && canManageTask && (
           <div onClick={(e) => e.stopPropagation()}>
             <select
               value={task.status}

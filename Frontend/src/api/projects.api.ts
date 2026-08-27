@@ -34,10 +34,10 @@ export const projectsApi = {
     });
   },
 
-  addMember: (projectId: string, userId: string) => {
+  addMember: (projectId: string, email: string) => {
     return apiClient<{ message: string; project: Project }>(`/projects/${projectId}/members`, {
       method: 'POST',
-      body: JSON.stringify({ userId }),
+      body: JSON.stringify({ email }),
     });
   },
 

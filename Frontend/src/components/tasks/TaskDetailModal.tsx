@@ -4,6 +4,7 @@ import type { Task, Project } from '../../types';
 import { Badge } from '../common/Badge';
 import { CommentSection } from '../comments/CommentSection';
 import { Calendar, User as UserIcon, Folder, Edit3, Trash2 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 interface TaskDetailModalProps {
   task: Task | null;
@@ -25,6 +26,9 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   projects,
 }) => {
   if (!task) return null;
+
+  const { user } = useAuth();
+  const canManageTask = task.userId === user?._id;
 
   const project =
     typeof task.projectId === 'object'
@@ -50,30 +54,32 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
               <Badge variant="priority" value={task.priority} />
             </div>
 
-            <div className="flex items-center gap-1.5">
-              <button
-                onClick={() => {
-                  onClose();
-                  onEdit(task);
-                }}
-                className="px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-medium rounded-md transition-colors flex items-center gap-1.5"
-              >
-                <Edit3 className="w-3 h-3" />
-                <span>Edit</span>
-              </button>
-              <button
-                onClick={() => {
-                  if (window.confirm('Delete this task?')) {
-                    onDelete(task._id);
+            {canManageTask && (
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => {
                     onClose();
-                  }
-                }}
-                className="px-2.5 py-1 bg-zinc-900 hover:bg-rose-950/40 text-zinc-400 hover:text-rose-300 border border-zinc-800 text-xs font-medium rounded-md transition-colors flex items-center gap-1.5"
-              >
-                <Trash2 className="w-3 h-3" />
-                <span>Delete</span>
-              </button>
-            </div>
+                    onEdit(task);
+                  }}
+                  className="px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-medium rounded-md transition-colors flex items-center gap-1.5"
+                >
+                  <Edit3 className="w-3 h-3" />
+                  <span>Edit</span>
+                </button>
+                <button
+                  onClick={() => {
+                    if (window.confirm('Delete this task?')) {
+                      onDelete(task._id);
+                      onClose();
+                    }
+                  }}
+                  className="px-2.5 py-1 bg-zinc-900 hover:bg-rose-950/40 text-zinc-400 hover:text-rose-300 border border-zinc-800 text-xs font-medium rounded-md transition-colors flex items-center gap-1.5"
+                >
+                  <Trash2 className="w-3 h-3" />
+                  <span>Delete</span>
+                </button>
+              </div>
+            )}
           </div>
 
           <h2 className="text-base font-semibold text-zinc-100">{task.title}</h2>
@@ -86,7 +92,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
         </div>
 
         {/* Status progress bar */}
-        <div className="bg-[#0e1118] p-3 rounded-lg border border-zinc-800/80 flex items-center justify-between gap-3">
+        {canManageTask && <div className="bg-[#0e1118] p-3 rounded-lg border border-zinc-800/80 flex items-center justify-between gap-3">
           <span className="text-xs text-zinc-400 font-medium">Status:</span>
           <div className="flex items-center gap-1.5">
             {(['todo', 'in-progress', 'completed'] as Task['status'][]).map((st) => (
@@ -103,7 +109,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
               </button>
             ))}
           </div>
-        </div>
+        </div>}
 
         {/* Metadata row */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -133,7 +139,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                 {typeof task.assignedTo === 'object' && task.assignedTo !== null
                   ? task.assignedTo.name
                   : task.assignedTo
-                  ? 'Assigned'
+                  ? 'Assigned user'
                   : 'Unassigned'}
               </div>
             </div>

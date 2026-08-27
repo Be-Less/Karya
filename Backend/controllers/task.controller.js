@@ -41,6 +41,7 @@ export const createTask = async (req, res, next) => {
       dueDate,
       priority,
     });
+    await task.populate("assignedTo", "name email");
     res.status(201).json({
       message: "Task created Successfully",
       task,
@@ -67,9 +68,20 @@ export const getTasks = async (req, res, next) => {
     const projects = await Project.find({
       "members.user": req.user.userId,
     });
-    const projectIds = projects.map((project) => project._id);
+    const ownedProjectIds = projects
+      .filter((project) => project.owner.toString() === req.user.userId)
+      .map((project) => project._id);
+    const memberProjectIds = projects
+      .filter((project) => project.owner.toString() !== req.user.userId)
+      .map((project) => project._id);
     const filter = {
-      projectId: { $in: projectIds },
+      $or: [
+        { projectId: { $in: ownedProjectIds } },
+        {
+          projectId: { $in: memberProjectIds },
+          $or: [{ userId: req.user.userId }, { assignedTo: req.user.userId }],
+        },
+      ],
     };
     if (status) {
       filter.status = status;
@@ -77,7 +89,7 @@ export const getTasks = async (req, res, next) => {
     if (priority) {
       filter.priority = priority;
     }
-    const tasks = await Task.find(filter);
+    const tasks = await Task.find(filter).populate("assignedTo", "name email");
 
     res.status(200).json({
       tasks,
@@ -96,7 +108,7 @@ export const getTask = async (req, res, next) => {
         message: "Invalid task ID",
       });
     }
-    const task = await Task.findById(id);
+    const task = await Task.findById(id).populate("assignedTo", "name email");
     if (!task) {
       return res.status(404).json({
         message: "Task not found",
@@ -111,6 +123,17 @@ export const getTask = async (req, res, next) => {
         message: "You are not a member of this project",
       });
     }
+    const isProjectOwner = project.owner.toString() === req.user.userId;
+    const assignedUserId = task.assignedTo?._id?.toString() || task.assignedTo?.toString();
+    const canViewTask =
+      isProjectOwner ||
+      task.userId.toString() === req.user.userId ||
+      assignedUserId === req.user.userId;
+    if (!canViewTask) {
+      return res.status(403).json({
+        message: "You do not have access to this task",
+      });
+    }
     res.status(200).json({
       task,
     });
@@ -122,12 +145,36 @@ export const getTask = async (req, res, next) => {
 export const updateTask = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { title, description, status, dueDate, priority } = req.body;
+    const { title, description, status, assignedTo, dueDate, priority } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         message: "Invalid task ID",
       });
+    }
+
+    const existingTask = await Task.findOne({
+      _id: id,
+      userId: req.user.userId,
+    });
+
+    if (!existingTask) {
+      return res.status(404).json({
+        message: "Task not found",
+      });
+    }
+
+    if (assignedTo) {
+      const project = await Project.findOne({
+        _id: existingTask.projectId,
+        "members.user": assignedTo,
+      });
+
+      if (!project) {
+        return res.status(400).json({
+          message: "Assigned user is not a member of this project",
+        });
+      }
     }
 
     const task = await Task.findOneAndUpdate(
@@ -139,6 +186,7 @@ export const updateTask = async (req, res, next) => {
         title,
         description,
         status,
+        assignedTo,
         dueDate,
         priority,
       },
@@ -152,6 +200,7 @@ export const updateTask = async (req, res, next) => {
         message: "Task not found",
       });
     }
+    await task.populate("assignedTo", "name email");
     res.status(200).json({
       message: "Task updated Successfully",
       task,

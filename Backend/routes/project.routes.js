@@ -134,9 +134,9 @@ router.delete("/:id", authMiddleware, deleteProject);
  *           schema:
  *             type: object
  *             required:
- *               - userId
+ *               - email
  *             properties:
- *               userId:
+ *               email:
  *                 type: string
  *     responses:
  *       200:

@@ -42,7 +42,7 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-[#0c0e14] flex flex-col justify-center items-center px-4 py-12">
       <div className="w-full max-w-sm space-y-6">
-        {/* Brand */}
+        {/* Brand Header */}
         <div className="flex flex-col items-center text-center space-y-2">
           <div className="w-9 h-9 rounded-xl bg-zinc-800 border border-zinc-700/80 flex items-center justify-center text-zinc-100 font-bold text-base shadow-sm">
             K
@@ -57,7 +57,7 @@ export default function Login() {
           </div>
         </div>
 
-        {/* Card */}
+        {/* Form Card */}
         <div className="bg-[#12141d] border border-zinc-800 rounded-xl p-6 shadow-sm space-y-4">
           {successMessage && (
             <div className="p-2.5 text-xs bg-emerald-950/40 border border-emerald-800/60 text-emerald-300 rounded-lg">
@@ -111,9 +111,13 @@ export default function Login() {
           </form>
         </div>
 
+        {/* Footer */}
         <p className="text-center text-xs text-zinc-400">
           Don't have an account?{' '}
-          <Link to="/register" className="font-medium text-zinc-200 hover:text-white underline underline-offset-2">
+          <Link
+            to="/register"
+            className="font-medium text-zinc-200 hover:text-white underline underline-offset-2"
+          >
             Sign up
           </Link>
         </p>
