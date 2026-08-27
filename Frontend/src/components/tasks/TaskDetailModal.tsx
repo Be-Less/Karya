@@ -28,7 +28,11 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   if (!task) return null;
 
   const { user } = useAuth();
-  const canManageTask = task.userId === user?._id;
+  const assignedUserId =
+    typeof task.assignedTo === 'object' && task.assignedTo !== null
+      ? task.assignedTo._id
+      : task.assignedTo;
+  const canManageTask = task.userId === user?._id || assignedUserId === user?._id;
 
   const project =
     typeof task.projectId === 'object'

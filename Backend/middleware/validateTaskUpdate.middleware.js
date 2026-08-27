@@ -1,10 +1,13 @@
 const validateTaskUpdate = (req, res, next) => {
-  const { title, description, status } = req.body;
+  const { title, description, status, assignedTo, dueDate, priority } = req.body;
 
   if (
     title === undefined &&
     description === undefined &&
-    status === undefined
+    status === undefined &&
+    assignedTo === undefined &&
+    dueDate === undefined &&
+    priority === undefined
   ) {
     return res.status(400).json({
       message: "At least one field is required to update",
@@ -30,6 +33,14 @@ const validateTaskUpdate = (req, res, next) => {
   if (status !== undefined && !validStatuses.includes(status)) {
     return res.status(400).json({
       message: "Invalid status",
+    });
+  }
+
+  const validPriorities = ["low", "medium", "high"];
+
+  if (priority !== undefined && !validPriorities.includes(priority)) {
+    return res.status(400).json({
+      message: "Invalid priority",
     });
   }
 

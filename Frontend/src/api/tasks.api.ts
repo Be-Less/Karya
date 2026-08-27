@@ -19,6 +19,7 @@ export interface UpdateTaskData {
   title?: string;
   description?: string;
   status?: TaskStatus;
+  assignedTo?: string;
   dueDate?: string;
   priority?: TaskPriority;
 }

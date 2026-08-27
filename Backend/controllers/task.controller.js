@@ -145,7 +145,7 @@ export const getTask = async (req, res, next) => {
 export const updateTask = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { title, description, status, assignedTo, dueDate, priority } = req.body;
+    const { assignedTo } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
@@ -155,7 +155,7 @@ export const updateTask = async (req, res, next) => {
 
     const existingTask = await Task.findOne({
       _id: id,
-      userId: req.user.userId,
+      $or: [{ userId: req.user.userId }, { assignedTo: req.user.userId }],
     });
 
     if (!existingTask) {
@@ -165,6 +165,12 @@ export const updateTask = async (req, res, next) => {
     }
 
     if (assignedTo) {
+      if (!mongoose.Types.ObjectId.isValid(assignedTo)) {
+        return res.status(400).json({
+          message: "Invalid assigned user ID",
+        });
+      }
+
       const project = await Project.findOne({
         _id: existingTask.projectId,
         "members.user": assignedTo,
@@ -177,19 +183,26 @@ export const updateTask = async (req, res, next) => {
       }
     }
 
+    const updates = {};
+    for (const field of [
+      "title",
+      "description",
+      "status",
+      "assignedTo",
+      "dueDate",
+      "priority",
+    ]) {
+      if (req.body[field] !== undefined) {
+        updates[field] = req.body[field];
+      }
+    }
+
     const task = await Task.findOneAndUpdate(
       {
         _id: id,
-        userId: req.user.userId,
+        $or: [{ userId: req.user.userId }, { assignedTo: req.user.userId }],
       },
-      {
-        title,
-        description,
-        status,
-        assignedTo,
-        dueDate,
-        priority,
-      },
+      updates,
       {
         returnDocument: "after",
         runValidators: true,
@@ -221,7 +234,7 @@ export const deleteTask = async (req, res, next) => {
 
     const task = await Task.findOneAndDelete({
       _id: id,
-      userId: req.user.userId,
+      $or: [{ userId: req.user.userId }, { assignedTo: req.user.userId }],
     });
 
     if (!task) {

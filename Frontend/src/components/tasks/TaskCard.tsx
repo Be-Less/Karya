@@ -20,7 +20,11 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   onStatusChange,
 }) => {
   const { user } = useAuth();
-  const canManageTask = task.userId === user?._id;
+  const assignedUserId =
+    typeof task.assignedTo === 'object' && task.assignedTo !== null
+      ? task.assignedTo._id
+      : task.assignedTo;
+  const canManageTask = task.userId === user?._id || assignedUserId === user?._id;
   const formattedDueDate = task.dueDate
     ? new Date(task.dueDate).toLocaleDateString(undefined, {
         month: 'short',
