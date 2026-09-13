@@ -14,6 +14,7 @@ import swaggerSpec from "./config/swagger.js";
 const app = express();
 
 const allowedOrigins = [
+  'https://karya-1.onrender.com',
   'https://karya-frontend.onrender.com',
   'http://localhost:5173'
 ];
