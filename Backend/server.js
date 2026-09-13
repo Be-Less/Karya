@@ -13,14 +13,31 @@ import swaggerSpec from "./config/swagger.js";
 
 // Middleware to parse JSON request bodies
 const app = express();
-app.use(express.json());
-app.use(cors({
-  origin: [
-    'https://karya-frontend.onrender.com',
-    'http://localhost:5173'
-  ],
+const allowedOrigins = [
+  'https://karya-frontend.onrender.com',
+  'http://localhost:5173'
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like Postman or mobile apps)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
-}));
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Enable preflight across all routes
+
+// 2. Body parsing middleware
+app.use(express.json());
+
 console.log("🔥 KARYA BACKEND VERSION: SWAGGER ENABLED");
 
 // Authentication Routes
