@@ -16,8 +16,6 @@ app.use(express.json());
 app.use(
   cors({
     origin: "https://karya-frontend.onrender.com",
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
