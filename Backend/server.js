@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+dotenv.config();
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/auth.routes.js";
 import taskRoutes from "./routes/task.routes.js";
@@ -16,10 +17,10 @@ app.use(express.json());
 app.use(
   cors({
     origin: "https://karya-frontend.onrender.com",
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-
-app.options(/.*/, cors());
 console.log("🔥 KARYA BACKEND VERSION: SWAGGER ENABLED");
 
 // Authentication Routes
@@ -36,7 +37,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(errorHandler);
 
 // Load environment variables from .env file
-dotenv.config();
+
 
 app.get("/", (req, res) => {
   res.send("Welcome to Karya");
