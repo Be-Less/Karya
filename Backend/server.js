@@ -20,6 +20,7 @@ app.use(
 );
 
 app.options(/.*/, cors());
+console.log("🔥 KARYA BACKEND VERSION: SWAGGER ENABLED");
 
 // Authentication Routes
 app.use("/api/auth", authRoutes);
