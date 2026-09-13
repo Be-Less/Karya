@@ -14,13 +14,13 @@ import swaggerSpec from "./config/swagger.js";
 // Middleware to parse JSON request bodies
 const app = express();
 app.use(express.json());
-app.use(
-  cors({
-    origin: "https://karya-frontend.onrender.com",
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+app.use(cors({
+  origin: [
+    'https://karya-frontend.onrender.com',
+    'http://localhost:5173'
+  ],
+  credentials: true
+}));
 console.log("🔥 KARYA BACKEND VERSION: SWAGGER ENABLED");
 
 // Authentication Routes
@@ -46,6 +46,6 @@ app.get("/", (req, res) => {
 // Calling connectDB function to establish a connection to the MongoDB database
 connectDB();
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on port ${PORT}`);
 });
