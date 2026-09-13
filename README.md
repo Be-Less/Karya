@@ -6,6 +6,11 @@ The idea is simple: create a project, add your team members, assign tasks, track
 
 > Karya is still under development, so some parts of the application may change as the project grows.
 
+## 🚀 Live Demo
+
+**Try Karya:**
+https://karya-1.onrender.com
+
 ## What can you do with Karya?
 
 * Create an account and log in
