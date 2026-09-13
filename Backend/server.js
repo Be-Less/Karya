@@ -13,7 +13,15 @@ import swaggerSpec from "./config/swagger.js";
 // Middleware to parse JSON request bodies
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://karya-frontend.onrender.com",
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
+app.options(/.*/, cors());
 
 // Authentication Routes
 app.use("/api/auth", authRoutes);
